@@ -19,35 +19,47 @@ export default function Home() {
     )
 }
 
-function Message({message}) {
-
+function Message({ message }) {
     const [timeAgo, setTimeAgo] = useState('');
 
     useEffect(() => {
-        const sentDate = new Date(message.date); // Convert UTC date string to a Date object
-        const currentDate = new Date();
+        // Function to update timeAgo
+        const updateAgoString = () => {
+            const sentDate = new Date(message.date); // Convert UTC date string to a Date object
+            const currentDate = new Date();
+            const timeDifference = currentDate - sentDate;
 
-        const timeDifference = currentDate - sentDate;
+            // Define time units
+            const seconds = Math.floor(timeDifference / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
 
-        // Define time units
-        const seconds = Math.floor(timeDifference / 1000);
-        const minutes = Math.floor(seconds / 60);
-        const hours = Math.floor(minutes / 60);
-        const days = Math.floor(hours / 24);
+            let agoString;
 
-        let agoString;
+            if (days > 0) {
+                agoString = `${days} day${days > 1 ? 's' : ''} ago`;
+            } else if (hours > 0) {
+                agoString = `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            } else if (minutes > 0) {
+                agoString = `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+            } else {
+                agoString = `${seconds} second${seconds > 1 ? 's' : ''} ago`;
+            }
 
-        if (days > 0) {
-            agoString = `${days} day${days > 1 ? 's' : ''} ago`;
-        } else if (hours > 0) {
-            agoString = `${hours} hour${hours > 1 ? 's' : ''} ago`;
-        } else if (minutes > 0) {
-            agoString = `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
-        } else {
-            agoString = `${seconds} second${seconds > 1 ? 's' : ''} ago`;
-        }
+            setTimeAgo(agoString);
+        };
 
-        setTimeAgo(agoString);
+        // Initial update
+        updateAgoString();
+
+        // Set up an interval to update every minute
+        const intervalId = setInterval(updateAgoString, 1000);
+
+        // Cleanup the interval on unmount
+        return () => {
+            clearInterval(intervalId);
+        };
     }, [message.date]);
 
     return (
