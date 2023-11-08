@@ -20,7 +20,7 @@ export function getPool() {
 
 export async function getEntries() {
     const pool = await getPool()
-    const query = 'SELECT * FROM entries where date >= DATE_SUB(NOW(), INTERVAL 1 DAY) ORDER BY date DESC limit 5'
+    const query = 'SELECT * FROM entries where date >= DATE_SUB(NOW(), INTERVAL 1 DAY) ORDER BY date DESC limit 4'
     try {
         const [rows] = await pool.query(query)
         return rows
